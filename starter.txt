@@ -1,0 +1,319 @@
+1) To start a project
+
+django-admin startproject postmann
+----------------------------------
+
+2)  wsgi: use when you are going to host this project on webserver
+----------------------------------
+
+3) To create an app
+
+python manage.py startapp api
+----------------------------------
+
+4) Add this to settings.py if you want to use postgres 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'trainingdb',
+        'USER': 'postgres',
+        'PASSWORD': 'archit94',
+        'HOST':'localhost',
+        'PORT': '5432',
+    }
+}
+----------------------------------
+
+5) python manage.py migrate
+   python manage.py makemigrations
+   
+   to make all the makemigrations
+----------------------------------
+
+6) python manage.py createsuperuser
+
+----------------------------------
+
+7) Since we added api app we need to add 'api' in INSTALLED_APPS
+ under the settings.py file
+
+----------------------------------
+
+8) In order to install Rest framework
+
+pip install djangorestframework
+----------------------------------
+
+9)  Since we want to use rest framework we need to add 'rest_framework' in INSTALLED_APPS
+ under the settings.py file
+----------------------------------
+
+10) Create a model in api/models.py
+class UserAPI(models.Model):
+    verbose_name="User1" 
+    name=models.CharField(max_length=50,unique=False) 
+    email=models.EmailField(unique=True)
+    password=models.CharField(unique=False,max_length=50)
+
+    class Meta:   # In order to change the model name in the admin portal
+        verbose_name="Userapi"
+----------------------------------
+
+11) In order to see objects in admin as emails rather than jobs.object format
+def __str__(self): #in order to see objects in admin as emails rather than jobs.object format
+        return self.email
+----------------------------------
+
+12) Make changes to admin.py in order to see the model in the admin portal
+admin.site.register(UserAPI)
+----------------------------------
+
+13) To use the Rest Framework, change the views.py file
+from rest_framework.response import Response #It will be a API response, not a simple HTTP Response
+from rest_framework.response import APIView
+----------------------------------
+Since we want to login we will use the GET operation
+14) class UserAPIView(APIView):
+
+   def get(self,request): #Basic Get Syntax
+        print(request.data) 
+        queryset=UserAPI.objects.filter(email=request.data.get('email')) #This is to get the email from request
+        #email is the primary key
+        #Request will get all the data of that primary key row as the API will be called when you hit the submit button
+        print (queryset)
+        
+	if queryset:
+            if queryset.values('password').first()['password']==request.data.get('password'): 
+                #First will give the data in dictionary format
+                return Response("You are successfully logged in ")
+            else:
+                return Response ("Password Incorrect")
+        else:
+            return Response("User is not registered")
+----------------------------------
+15) Next thing you need to change is the api/urls.py file in order to get a pretty format 
+
+from django.urls import path
+from .views import UserAPIView
+urlpatterns = [
+    path('login/', UserAPIView.as_view()), #it will give nice format of the api
+    path('login/<int:pk>',UserAPIView.as_view()),
+]
+
+----------------------------------
+16) Next thing we need to include the api/urls.py into postmann/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/',include('api.urls')), <---------- We added this thing
+    path('',include('display.urls')),
+]
+
+17) use http://127.0.0.1:8000/api/login/ in postman along with the get operation and hit send
+now to see whether the request is getting the data we entered 
+
+we will print the request.data in GET
+
+if it's not printing that means, we need to make some changes, and here comes the serializers.py file 
+
+----------------------------------
+
+18) Serializers will be used to convert the JSON data into the 0 & 1 which can be read by computer
+
+So we need to create one more file in  api folder as serializers.py
+
+from rest_framework import serializers
+from .models import UserAPI
+
+class UserApiSerializer(serializers.Serializer):
+    name=serializers.CharField(max_length=50)
+    email=serializers.CharField()
+    password=serializers.CharField()
+
+    def create(self,validated_data):
+        return UserAPI.objects.create(**validated_data)
+    
+    def update(self,instance,validated_data):
+        instance.name=validated_data.get('name',instance.name)
+        instance.email=validated_data.get('email',instance.email)
+        instance.password=validated_data.get('password',instance.password)
+        instance.save()
+        return instance
+----------------------------------
+
+19) We need to make sure we do add the class UserAPISerializer in views.py 
+
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import UserAPI
+from .serializers import UserApiSerializer <--- This is what we need to add
+from django.shortcuts import get_object_or_404
+----------------------------------
+
+20) we need to use post to save new data 
+
+    def post(self,request):
+        queryset=request.data
+        serializer=UserApiSerializer(data=queryset)
+        if serializer.is_valid(raise_exception=True): #Here it checks whether all the data is present or not. if not, it will raise an exception
+            save_data=serializer.save()
+        return Response({"Success":"User '{}' created successfully".format(save_data.name)})
+
+This alone won't work 
+so we need to add some lines of code to serializers.py
+
+    def create(self,validated_data): #IF we have written 3 things name,email and password in UserApiSerializer then we need those data as input
+					#if those data are missing then we will get an exception
+        return UserAPI.objects.create(**validated_data)
+
+------------------------------------------------------------------------------
+update Rec lec19
+21) if we want to update any record, we need the pk of that record
+so we will first define the update function with following syntax
+
+   def put(self,request,pk):
+        queryset=get_object_or_404(UserAPI.objects.all(),pk=pk) ##to get the stored element values
+
+        parsed_data=request.data ## it will give new values
+        serializer =UserApiSerializer(instance=queryset,data=parsed_data,partial=True) # we need serializer to update, even in GET we need to use it which we haven't used yet
+        if serializer.is_valid(raise_exception=True):
+            save_data=serializer.save()
+        return Response({"Success":"User '{}' Updated successfully".format(save_data.name)})
+
+----------------------------------
+22) For both update and delete we need to figure out the id/primary key of the object 
+One way to get the primary key is to go to admin and then go to object and see the url. The number mentioned on the top of it is the primary key
+Copy and paste url like this : http://127.0.0.1:8000/api/login/3
+and then select the operation
+
+We need to update the serializers.py file by adding update function
+
+    def update(self,instance,validated_data):
+        instance.name=validated_data.get('name',instance.name)
+        instance.email=validated_data.get('email',instance.email)
+        instance.password=validated_data.get('password',instance.password)
+        instance.save()
+        return instance
+
+Now the only thing remaining is in views.py, how to give the pk 
+for that we need to go to urls.py and add this line
+path('login/<int:pk>',UserAPIView.as_view()) 
+
+----------------------------------
+23) For both update and delete we need to figure out the id/primary key of the object 
+One way to get the primary key is to go to admin and then go to object and see the url. The number mentioned on the top of it is the primary key
+Copy and paste url like this : http://127.0.0.1:8000/api/login/3
+and then select the operation
+
+Similary for delete operation.
+
+    def delete(self,request,pk):
+        queryset=get_object_or_404(UserAPI.objects.all(),pk=pk)
+        queryset.delete()
+        return Response({"Success":"User with Id'{}' Deleted successfully".format(pk)})
+
+----------------------------------
+24) Now in order to get your api working with the display page, add one more app and name it as display
+Change the views.py with the following code:
+
+from django.shortcuts import render
+import requests
+import json 
+# Create your views here.
+def login(request):
+    return render(request, 'signup_1.html')
+
+def submitUser(request):
+    email=request.GET['email']
+    password=request.GET['password']
+    name=request.GET['username']
+    print (email,password,name,"this is me")
+    url = "http://127.0.0.1:8000/api/login/"
+
+    payload = {"email":email,"password":password,"name":name}
+    payload=json.dumps(payload)
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("GET", url, headers=headers, data = payload)
+    data=response.text
+    return render(request,'success.html',{'data':data})
+----------------------------------
+25) Also change the urls.py file with this code:
+from django.urls import path
+#from .views import UserAPIView
+from . import views
+
+urlpatterns = [
+    path('display/',views.login, name="display"),
+    path('submit/',views.submitUser, name="submitb"),
+]
+----------------------------------
+
+26) Also change the settings.py file
+add:
+TEMPLATE_DIR=os.path.join(BASE_DIR,"template")
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [TEMPLATE_DIR,],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+----------------------------------
+27) 
+STATIC_ROOT=os.path.join(BASE_DIR,"static")
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS=[
+    os.path.join(BASE_DIR,"postmann/static/")
+
+----------------------------------
+28) Make changes to the signin.html page
+
+----------------------------------
+Once you make the changes in signin html page 
+you will encounter url submit b
+
+generally what happens is your function calls the view
+but when you want to pass on the information to the view 
+your template will passon the info to submitb and submit b will call the view to passon the information there 
+for there we need to add url to urls.py  and add a function submitUser to the views.py
+urls.py
+    path('submit/',views.submitUser, name="submitb"),
+
+views.py
+import json
+def submitUser(request):
+    email=request.GET['email']
+    password=request.GET['password']
+    name=request.GET['username']
+    print (email,password,name,"this is me")
+    url = "http://127.0.0.1:8000/api/login/"
+
+    payload = {"email":email,"password":password,"name":name}
+    payload=json.dumps(payload)
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+
+Also, you need to add if the above process is successful, what next we want to do
+we want to login to the next page, so add the following lines of code
+    response = requests.request("GET", url, headers=headers, data = payload)
+    data=response.text
+    return render(request,'success.html',{'data':data})
+
+

@@ -1,0 +1,72 @@
+.top_nav{
+    background-color: rgb(209, 209, 209);
+}
+.top_nav img{
+    max-width: 12%;
+    max-height:12%;
+}
+
+/*.box{
+    color:rgb(41, 41, 41);
+    height:600px;
+    width:250px;
+    position:relative;
+    top:80px;
+    left:200px;
+    text-align: center;
+    border-color: grey;
+}*/
+
+/* input[type="text"],input[type="password"]{
+    margin-bottom:20px;
+    padding:8px;
+    border:none;
+    border-bottom:1px solid rgb(41, 41, 41);
+} */
+
+/* input[type="submit"]{
+    width:120px;
+    height:35px;
+    color:rgb(255, 255, 255);
+    background-color:rgb(0, 168, 65);
+    font-family: "montserrat";
+    font-size: 20px;
+    text-transform: uppercase;
+    cursor:pointer;
+
+} 
+
+.facebook_btn{
+    font-family: "montserrat";
+    font-size: 20px;
+    width:120px;
+    height: 35px;
+    background-color:#32508e;
+    border-color: #32508e;
+    cursor:pointer;
+    color: white;
+    border-radius:5px;
+}
+.google_btn{
+    font-family: "montserrat";
+    font-size: 20px;
+    width:120px;
+    height: 35px;
+    background-color:rgb(236, 45, 45);
+    color: white;
+    border-radius:5px;
+    cursor:pointer;
+}
+.google_btn:hover{
+    opacity: 0.8;
+    box-shadow:0px 2px 4px rgb(41, 41, 41);
+}
+.facebook_btn:hover{
+    opacity: 0.8;
+    box-shadow:0px 2px 4px rgb(41, 41, 41);
+}
+*/
+/*input[type="submit"]:hover,input[type="submit"]:focus{
+    opacity: 0.8;
+    box-shadow: rgb(41, 41, 41);
+}*/
