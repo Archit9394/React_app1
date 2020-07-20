@@ -9,13 +9,13 @@ The Signup page contains three columns:
  - Password
 
 The Signin page contains will ask for
- -Email Address
- -Password
+ - Email Address
+ - Password
  
 The listing Page contains 
- -Name of the restaurant
- -Cuisine
- -Rating
+ - Name of the restaurant
+ - Cuisine
+ - Rating
 
 ## Getting Started
 Open terminal 1 and run the following command
