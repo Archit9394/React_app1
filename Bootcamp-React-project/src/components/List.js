@@ -8,27 +8,33 @@ import CategoriesCarousel from './common/CategoriesCarousel';
 import axios from "axios";
 
 class List extends React.Component {
-	state={
-		list1:[]
+	constructor(props) {
+		super(props);
+		this.state={
+			list1:[],
+
+		};
+
 	}
 	componentDidMount(){
-		axios.get('http://localhost:8000/api/login/').then((res)=>{
-			const list1=res.data
-			console.log(list1)
-		})
-	}
+		axios.get('http://localhost:8000/listing/list1/').then(res=>{
+				console.log(res)
+				this.setState({
+					list1:res.data,
+					imageURL:res.data.image
+				});
+			});
+		}
 	render() {
     	return (
-    		<>
+			<>
 	    		<PageTitle 
 	    			title="Offers Near You"
-	    			subTitle="Best deals at your favourite restaurants"
-	    		/>
+					subTitle="Best deals at your favourite restaurants"
+					//resetState={this.resetState}
+				/>
 	    		<section className="section pt-5 pb-5 products-listing">
 					 <Container>
-					 	 <ul>
-					 	 	{ this.state.list1.map(list1 => <li>{list1}</li>)}
-				   		 </ul>
 			            <Row className="d-none-m">
 			               <Col md={12}>
 			               		<Dropdown className="float-right">
@@ -47,10 +53,14 @@ class List extends React.Component {
 			               </Col>
 			            </Row>
 			            <Row>
-			               <Col md={3}>
+						   <Col md={3}>
+								{/*<ul>
+								{ this.state.list1.map((list1) => <li>{list1}</li>)}
+								</ul>*/}
 			                  <div className="filters shadow-sm rounded bg-white mb-4">
 			                     <div className="filters-header border-bottom pl-4 pr-4 pt-3 pb-3">
-			                        <h5 className="m-0">Filter By</h5>
+									<h5 className="m-0">Filter By</h5>
+									{/*<h4>{list1}</h4>*/}
 			                     </div>
 			                     <div className="filters-body">
 			                     	<Accordion defaultActiveKey="0">
@@ -345,8 +355,9 @@ class List extends React.Component {
 			               </Col>
 			               <Col md={9}>
 			               	  <CategoriesCarousel />
-			                  <Row>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
+							  <Row>
+								 {/* <Col md={4} sm={6} className="mb-4 pb-2">
+									
 			                        <CardItem 
 								   		title='Bite Me Sandwiches'
 										subTitle='North Indian • American • Pure veg'
@@ -361,144 +372,33 @@ class List extends React.Component {
 										promotedVariant='dark'
 										favIcoIconColor='text-danger'
 										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/2.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/3.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/4.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/5.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/6.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/7.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/8.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
-			                     <Col md={4} sm={6} className="mb-4 pb-2">
-			                        <CardItem 
-								   		title='Bite Me Sandwiches'
-										subTitle='North Indian • American • Pure veg'
-									  	imageAlt='Product'
-									    image='img/list/9.png'
-									    imageClass='img-fluid item-img'
-									    linkUrl='detail'
-									    offerText='65% off | Use Coupon OSAHAN50'
-										time='15–25 min'
-										price='$100 FOR TWO'
-										showPromoted={true}
-										promotedVariant='dark'
-										favIcoIconColor='text-danger'
-										rating='3.1 (300+)'
-								   	/>
-			                     </Col>
+									   />
+								 </Col>*/}
+								 {/*<ul>
+									 {this.state.list1.map(lis=><li>{lis.password}</li>)}
+									 {this.state.list1.map(lis=><li>{lis.email}</li>)}
+									</ul>*/}
+								
+									 {this.state.list1.map(lis=>
+										<Col md={4} sm={6} className="mb-4 pb-2">
+											<div className="card">
+												<CardItem   image='img/list/1.png'
+															imageClass='img-fluid item-img'
+															imageAlt='Product'
+															linkUrl='detail'
+															showPromoted={true}
+															favIcoIconColor='text-danger'
+															title={lis.name}
+															subTitle={lis.cuisine}
+															rating={lis.rating}
+															//price={lis.cuisine}
+															//offerText='65% off | Use Coupon OSAHAN50'
+															>
+												</CardItem>
+												{/*<img src={lis.image}/>*/}
+											</div>
+										</Col>
+										)}
 			                     <Col md={12} className="text-center load-more">
 			                        <Button variant="primary" type="button" disabled="">
 			                        	<Spinner animation="grow" size="sm" className='mr-1' />
